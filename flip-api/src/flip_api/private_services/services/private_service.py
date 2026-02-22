@@ -21,7 +21,7 @@ from flip_api.utils.logger import logger
 
 def save_job_metrics(model_id: UUID, training_metrics: TrainingMetrics, db: Session) -> None:
     """
-    Saves the provided training metrics to the database.
+    Saves the provided job metrics to the database.
     """
     logger.info(f"Attempting to save training metrics for model_id: {model_id}, trust: {training_metrics.trust}")
 
