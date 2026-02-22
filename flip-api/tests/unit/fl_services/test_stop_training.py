@@ -94,4 +94,4 @@ def test_stop_job_failure(
         stop_job(model_id, fake_request, mock_db, user_id)
 
     assert exc_info.value.status_code == 500
-    assert "An error occurred while stopping model training" in exc_info.value.detail
+    assert "An error occurred while stopping job" in exc_info.value.detail
