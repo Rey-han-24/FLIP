@@ -28,7 +28,7 @@ from flip_api.private_services.services.private_service import save_job_metrics
 # If ModelIdSchema is not used, this can be removed.
 # MOCKED_MODEL_ID_SCHEMA_VALIDATE_PATH = "flip_api.private_services.save_job_metrics.ModelIdSchema.validate"
 # MOCKED_IS_TRUST_ASSOCIATED_PATH = "flip_api.private_services.save_job_metrics.validate_trusts"
-# MOCKED_STORE_METRICS_PATH = "flip_api.private_services.save_job_metrics._store_training_metrics_in_db"
+# MOCKED_STORE_METRICS_PATH = "flip_api.private_services.save_job_metrics._store_job_metrics_in_db"
 
 # Test client to test the endpoint
 client = TestClient(app)
