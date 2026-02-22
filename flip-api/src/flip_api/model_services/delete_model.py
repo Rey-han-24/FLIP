@@ -19,7 +19,7 @@ from sqlmodel import Session
 from flip_api.auth.access_manager import can_access_model
 from flip_api.auth.dependencies import verify_token
 from flip_api.db.database import get_session
-from flip_api.fl_services.services.fl_service import abort_model_training
+from flip_api.fl_services.services.fl_service import abort_job
 from flip_api.model_services.services.model_service import delete_model, get_model_status
 from flip_api.utils.logger import logger
 
@@ -70,7 +70,7 @@ def delete_model_endpoint(
     try:
         delete_model(model_id, user_id, db)
 
-        abort_model_training(request, model_id, db)
+        abort_job(request, model_id, db)
 
     except SQLAlchemyError:
         error_message = "Database error occurred during model deletion."

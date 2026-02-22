@@ -707,7 +707,7 @@ def test_extract_current_job_data_multiple_found(mock_http_get):
 @patch("flip_api.fl_services.services.fl_service.abort_job")
 @patch("flip_api.fl_services.services.fl_scheduler_service.get_net_by_model_id")
 @patch("flip_api.fl_services.services.fl_scheduler_service.remove_job_from_queue")
-def test_abort_model_training_success(
+def test_abort_job_success(
     mock_remove,
     mock_get_net,
     mock_abort,
@@ -726,7 +726,7 @@ def test_abort_model_training_success(
     request.scope = {"request_id": "req-id"}
     request.path_params = {"target": "server", "clients": None}
 
-    fl_service.abort_model_training(request, model_id, fake_session)
+    fl_service.abort_job(request, model_id, fake_session)
     mock_abort.assert_called_once_with("req-id", "http://endpoint", "job123")
 
 

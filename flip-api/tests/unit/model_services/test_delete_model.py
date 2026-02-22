@@ -79,7 +79,7 @@ def mock_delete_model():
 
 @pytest.fixture
 def mock_abort_training():
-    with patch("flip_api.model_services.delete_model.abort_model_training") as mock:
+    with patch("flip_api.model_services.delete_model.abort_job") as mock:
         yield mock
 
 

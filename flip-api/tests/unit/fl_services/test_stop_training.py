@@ -17,7 +17,7 @@ import pytest
 from fastapi import HTTPException, Request
 
 from flip_api.domain.schemas.status import ModelStatus
-from flip_api.fl_services.stop_training import stop_training
+from flip_api.fl_services.stop_job import stop_job
 
 
 @pytest.fixture
@@ -35,7 +35,7 @@ def fake_request():
 
 @pytest.fixture
 def mock_db():
-    with patch("flip_api.fl_services.stop_training.get_session") as mock_get_session:
+    with patch("flip_api.fl_services.stop_job.get_session") as mock_get_session:
         mock_db = MagicMock()
         mock_get_session.return_value = mock_db
         yield mock_db
@@ -43,7 +43,7 @@ def mock_db():
 
 @pytest.fixture
 def mock_can_access_model():
-    with patch("flip_api.fl_services.stop_training.can_access_model") as mock:
+    with patch("flip_api.fl_services.stop_job.can_access_model") as mock:
         mock.return_value = True
         yield mock
 
@@ -54,44 +54,44 @@ def user_id():
 
 
 @pytest.fixture
-def mock_abort_model_training():
-    with patch("flip_api.fl_services.stop_training.abort_model_training") as mock:
+def mock_abort_job():
+    with patch("flip_api.fl_services.stop_job.abort_job") as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_update_status():
-    with patch("flip_api.fl_services.stop_training.update_model_status") as mock:
+    with patch("flip_api.fl_services.stop_job.update_model_status") as mock:
         yield mock
 
 
-def test_stop_training_success(
-    model_id, fake_request, mock_db, mock_can_access_model, user_id, mock_abort_model_training, mock_update_status
+def test_stop_job_success(
+    model_id, fake_request, mock_db, mock_can_access_model, user_id, mock_abort_job, mock_update_status
 ):
-    result = stop_training(model_id, fake_request, mock_db, user_id)
+    result = stop_job(model_id, fake_request, mock_db, user_id)
 
     assert result is None
-    mock_abort_model_training.assert_called_once_with(fake_request, model_id, mock_db)
+    mock_abort_job.assert_called_once_with(fake_request, model_id, mock_db)
     mock_update_status.assert_called_once_with(model_id, ModelStatus.STOPPED, mock_db)
 
 
-def test_stop_training_forbidden(fake_request, model_id, mock_db, mock_can_access_model, user_id):
+def test_stop_job_forbidden(fake_request, model_id, mock_db, mock_can_access_model, user_id):
     mock_can_access_model.return_value = False
 
     with pytest.raises(HTTPException) as exc_info:
-        stop_training(model_id, fake_request, mock_db, user_id)
+        stop_job(model_id, fake_request, mock_db, user_id)
 
     assert exc_info.value.status_code == 403
     assert "denied access" in exc_info.value.detail
 
 
-def test_stop_training_failure(
-    fake_request, model_id, mock_db, mock_can_access_model, user_id, mock_abort_model_training
+def test_stop_job_failure(
+    fake_request, model_id, mock_db, mock_can_access_model, user_id, mock_abort_job
 ):
-    mock_abort_model_training.side_effect = Exception("oops")
+    mock_abort_job.side_effect = Exception("oops")
 
     with pytest.raises(HTTPException) as exc_info:
-        stop_training(model_id, fake_request, mock_db, user_id)
+        stop_job(model_id, fake_request, mock_db, user_id)
 
     assert exc_info.value.status_code == 500
     assert "An error occurred while stopping model training" in exc_info.value.detail

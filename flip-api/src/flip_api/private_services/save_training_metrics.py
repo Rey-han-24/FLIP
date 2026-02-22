@@ -19,7 +19,7 @@ from flip_api.auth.access_manager import check_authorization_token
 from flip_api.db.database import get_session
 from flip_api.domain.schemas.private import TrainingMetrics
 from flip_api.model_services.services.model_service import validate_trusts
-from flip_api.private_services.services.private_service import save_training_metrics
+from flip_api.private_services.services.private_service import save_job_metrics
 from flip_api.utils.logger import logger
 
 router = APIRouter(tags=["private_services"])
@@ -32,7 +32,7 @@ router = APIRouter(tags=["private_services"])
     status_code=status.HTTP_204_NO_CONTENT,  # Returns 204 No Content on success
     response_model=None,
 )
-def save_training_metrics_endpoint(
+def save_job_metrics_endpoint(
     model_id: UUID,
     training_metrics: TrainingMetrics,
     request: Request,
@@ -88,7 +88,7 @@ def save_training_metrics_endpoint(
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
 
         # 3. Save Metrics
-        save_training_metrics(model_id=model_id, training_metrics=training_metrics, db=db)
+        save_job_metrics(model_id=model_id, training_metrics=training_metrics, db=db)
 
     except HTTPException as http_exc:
         # Log and re-raise HTTPExceptions (e.g., from validate_trusts or auth)
@@ -98,7 +98,7 @@ def save_training_metrics_endpoint(
         )
         raise http_exc
     except Exception as e:
-        # Catch-all for other exceptions (e.g., from save_training_metrics)
+        # Catch-all for other exceptions (e.g., from save_job_metrics)
         logger.error(
             f"Unhandled error processing training metrics for model {model_id}, trust {training_metrics.trust} in "
             "{endpoint_path}: {e}",

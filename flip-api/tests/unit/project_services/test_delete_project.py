@@ -53,7 +53,7 @@ def mock_services(monkeypatch):
         "get_imaging_projects": MagicMock(return_value=[]),
         "delete_imaging_project": MagicMock(),
         "get_project_models_service": MagicMock(return_value=(MagicMock(data=[]), None)),
-        "abort_model_training": MagicMock(),
+        "abort_job": MagicMock(),
         "delete_project": MagicMock(),
     }
 
@@ -61,7 +61,7 @@ def mock_services(monkeypatch):
     monkeypatch.setattr(delete_project_module, "get_imaging_projects", mocks["get_imaging_projects"])
     monkeypatch.setattr(delete_project_module, "delete_imaging_project", mocks["delete_imaging_project"])
     monkeypatch.setattr(delete_project_module, "get_project_models_service", mocks["get_project_models_service"])
-    monkeypatch.setattr(delete_project_module, "abort_model_training", mocks["abort_model_training"])
+    monkeypatch.setattr(delete_project_module, "abort_job", mocks["abort_job"])
     monkeypatch.setattr(delete_project_module, "delete_project", mocks["delete_project"])
 
     return mocks
@@ -95,6 +95,6 @@ def test_delete_project_abort_training_called(override_dependencies, mock_servic
     response = client.delete(f"/projects/{project_id}")
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
-    mock_services["abort_model_training"].assert_called_once_with(
+    mock_services["abort_job"].assert_called_once_with(
         request=ANY, model_id=model_mock.id, session=override_dependencies["mock_db"]
     )

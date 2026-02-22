@@ -19,7 +19,7 @@ from flip_api.auth.access_manager import can_access_model
 from flip_api.auth.dependencies import verify_token
 from flip_api.db.database import get_session
 from flip_api.domain.schemas.status import ModelStatus
-from flip_api.fl_services.services.fl_service import abort_model_training
+from flip_api.fl_services.services.fl_service import abort_job
 from flip_api.model_services.services.model_service import update_model_status
 
 router = APIRouter(prefix="/fl", tags=["fl_services"])
@@ -29,7 +29,7 @@ router = APIRouter(prefix="/fl", tags=["fl_services"])
 @router.post("/stop/{model_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 @router.post("/stop/{model_id}/{target}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 @router.post("/stop/{model_id}/{target}/{clients}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
-def stop_training(
+def stop_job(
     model_id: UUID,
     request: Request,
     db: Session = Depends(get_session),
@@ -57,7 +57,7 @@ def stop_training(
         )
 
     try:
-        abort_model_training(request, model_id, db)
+        abort_job(request, model_id, db)
         update_model_status(model_id, ModelStatus.STOPPED, db)
 
     except Exception as e:

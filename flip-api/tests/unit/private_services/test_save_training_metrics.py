@@ -22,13 +22,13 @@ from sqlmodel import Session
 from flip_api.auth.access_manager import check_authorization_token
 from flip_api.domain.schemas.private import TrainingMetrics
 from flip_api.main import app
-from flip_api.private_services.services.private_service import save_training_metrics
+from flip_api.private_services.services.private_service import save_job_metrics
 
 # Path for mocking ModelIdSchema if it's a custom validator like in add_log.py
 # If ModelIdSchema is not used, this can be removed.
-# MOCKED_MODEL_ID_SCHEMA_VALIDATE_PATH = "flip_api.private_services.save_training_metrics.ModelIdSchema.validate"
-# MOCKED_IS_TRUST_ASSOCIATED_PATH = "flip_api.private_services.save_training_metrics.validate_trusts"
-# MOCKED_STORE_METRICS_PATH = "flip_api.private_services.save_training_metrics._store_training_metrics_in_db"
+# MOCKED_MODEL_ID_SCHEMA_VALIDATE_PATH = "flip_api.private_services.save_job_metrics.ModelIdSchema.validate"
+# MOCKED_IS_TRUST_ASSOCIATED_PATH = "flip_api.private_services.save_job_metrics.validate_trusts"
+# MOCKED_STORE_METRICS_PATH = "flip_api.private_services.save_job_metrics._store_training_metrics_in_db"
 
 # Test client to test the endpoint
 client = TestClient(app)
@@ -84,10 +84,10 @@ class TestTrainingMetricsModel:
 
 
 class TestServiceFunctions:
-    def test_save_training_metrics_success(
+    def test_save_job_metrics_success(
         self, mock_db_session_fixture: MagicMock, sample_metrics_payload_obj: TrainingMetrics, model_id
     ):
-        save_training_metrics(model_id, sample_metrics_payload_obj, mock_db_session_fixture)
+        save_job_metrics(model_id, sample_metrics_payload_obj, mock_db_session_fixture)
         mock_db_session_fixture.add.assert_called_once()
         # Further assertions can be made on the object passed to add, e.g., its type and attributes
         added_object = mock_db_session_fixture.add.call_args[0][0]
@@ -100,12 +100,12 @@ class TestServiceFunctions:
         mock_db_session_fixture.commit.assert_called_once()
         mock_db_session_fixture.rollback.assert_not_called()
 
-    def test_save_training_metrics_exception(
+    def test_save_job_metrics_exception(
         self, mock_db_session_fixture: MagicMock, sample_metrics_payload_obj: TrainingMetrics, model_id
     ):
         mock_db_session_fixture.add.side_effect = Exception("DB write error")
         with pytest.raises(Exception, match="DB write error"):
-            save_training_metrics(model_id, sample_metrics_payload_obj, mock_db_session_fixture)
+            save_job_metrics(model_id, sample_metrics_payload_obj, mock_db_session_fixture)
         mock_db_session_fixture.commit.assert_not_called()
         mock_db_session_fixture.rollback.assert_called_once()  # Assuming rollback in actual implementation
 
@@ -122,8 +122,8 @@ class TestSaveTrainingMetricsEndpoint:
     def teardown_class(cls):
         app.dependency_overrides = {}
 
-    @patch("flip_api.private_services.save_training_metrics.save_training_metrics")
-    @patch("flip_api.private_services.save_training_metrics.validate_trusts")
+    @patch("flip_api.private_services.save_job_metrics.save_job_metrics")
+    @patch("flip_api.private_services.save_job_metrics.validate_trusts")
     def test_save_metrics_success(self, mock_validate_trusts, mock_save_metrics, sample_metrics_payload_dict):
         mock_validate_trusts.return_value = True
         mock_save_metrics.return_value = None
@@ -133,7 +133,7 @@ class TestSaveTrainingMetricsEndpoint:
         assert response.status_code == 204
         mock_save_metrics.assert_called_once()
 
-    @patch("flip_api.private_services.save_training_metrics.validate_trusts")
+    @patch("flip_api.private_services.save_job_metrics.validate_trusts")
     def test_save_metrics_invalid_trust(self, mock_validate_trusts, sample_metrics_payload_dict):
         mock_validate_trusts.return_value = False
 
@@ -142,8 +142,8 @@ class TestSaveTrainingMetricsEndpoint:
         assert response.status_code == 400
         assert "trust" in response.json()["detail"].lower()
 
-    @patch("flip_api.private_services.save_training_metrics.save_training_metrics")
-    @patch("flip_api.private_services.save_training_metrics.validate_trusts")
+    @patch("flip_api.private_services.save_job_metrics.save_job_metrics")
+    @patch("flip_api.private_services.save_job_metrics.validate_trusts")
     def test_save_metrics_internal_error(self, mock_validate_trusts, mock_save_metrics, sample_metrics_payload_dict):
         mock_validate_trusts.return_value = True
         mock_save_metrics.side_effect = Exception("Simulated DB failure")

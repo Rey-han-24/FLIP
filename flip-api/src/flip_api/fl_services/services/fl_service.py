@@ -768,7 +768,7 @@ def extract_current_job_data(net_endpoint: str, fl_backend_job_id: str) -> IJobM
     return current_job_data[0]
 
 
-def abort_model_training(request: Request, model_id: UUID, session: Session) -> None:
+def abort_job(request: Request, model_id: UUID, session: Session) -> None:
     """
     Check if the model is currently running training, and if it is, send an abort request to the FL server.
 

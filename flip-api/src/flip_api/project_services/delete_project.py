@@ -18,7 +18,7 @@ from sqlmodel import Session
 from flip_api.auth.access_manager import can_access_project
 from flip_api.auth.dependencies import verify_token
 from flip_api.db.database import get_session
-from flip_api.fl_services.services.fl_service import abort_model_training
+from flip_api.fl_services.services.fl_service import abort_job
 from flip_api.project_services.services.image_service import delete_imaging_project, get_imaging_projects
 from flip_api.project_services.services.project_services import delete_project, get_project_models_service
 from flip_api.utils.logger import logger
@@ -74,7 +74,7 @@ def delete_project_endpoint(
     logger.debug(f"Project models to be deleted: {project_models}")
 
     for model in project_models.data:
-        abort_model_training(request=request, model_id=model.id, session=db)
+        abort_job(request=request, model_id=model.id, session=db)
 
     # Call delete project service
     delete_project(project_id, user_id, db)

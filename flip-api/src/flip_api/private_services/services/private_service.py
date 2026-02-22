@@ -19,7 +19,7 @@ from flip_api.domain.schemas.private import TrainingMetrics
 from flip_api.utils.logger import logger
 
 
-def save_training_metrics(model_id: UUID, training_metrics: TrainingMetrics, db: Session) -> None:
+def save_job_metrics(model_id: UUID, training_metrics: TrainingMetrics, db: Session) -> None:
     """
     Saves the provided training metrics to the database.
     """

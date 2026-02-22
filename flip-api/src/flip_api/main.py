@@ -37,7 +37,7 @@ from flip_api.fl_services import (
     get_status,
     initiate_training,
     run_jobs,
-    stop_training,
+    stop_job,
 )
 from flip_api.model_services import (
     delete_model,
@@ -54,7 +54,7 @@ from flip_api.private_services import (
     add_log,
     invoke_model_status_update,
     receive_cohort_results,
-    save_training_metrics,
+    save_job_metrics,
 )
 from flip_api.project_services import (
     approve_project,
@@ -141,7 +141,7 @@ app.include_router(get_net_status.router)
 app.include_router(get_status.router)
 app.include_router(initiate_training.router)
 app.include_router(run_jobs.router)
-app.include_router(stop_training.router)
+app.include_router(stop_job.router)
 # Model job types endpoint (moved from FL)
 app.include_router(get_job_types.router)
 # Model services
@@ -157,7 +157,7 @@ app.include_router(update_model_status.router)
 app.include_router(add_log.router)
 app.include_router(invoke_model_status_update.router)
 app.include_router(receive_cohort_results.router)
-app.include_router(save_training_metrics.router)
+app.include_router(save_job_metrics.router)
 # Project services
 app.include_router(approve_project.router)
 app.include_router(create_project.router)
