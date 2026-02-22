@@ -770,7 +770,7 @@ def extract_current_job_data(net_endpoint: str, fl_backend_job_id: str) -> IJobM
 
 def abort_job(request: Request, model_id: UUID, session: Session) -> None:
     """
-    Check if the model is currently running training, and if it is, send an abort request to the FL server.
+    Check if the model is currently running a job, and if it is, send an abort request to the FL server.
 
     Args:
         request: The FastAPI request object
